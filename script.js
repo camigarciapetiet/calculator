@@ -1,23 +1,14 @@
 function addElement(e){
-    visor.textContent=visor.textContent+e;
+    expression += e;
+    visor.textContent = expression;
 }
 
-function add(a, b){
-
-}
-function substract(a, b){
-    
-}
-function multiply(a, b){
-    
-}
-function divide(a, b){
-    
-}
-function operate(a, op, b){
-    
+function delLastElement(){
+    expression = expression.slice(0, -1);
+    visor.textContent = expression;
 }
 
+let expression = "";
 const visor= document.querySelector("#visor");
 const n1=document.querySelector("#n1");
 const n2=document.querySelector("#n2");
@@ -50,3 +41,61 @@ sSub.addEventListener("click", ()=> {addElement("-")});
 sMul.addEventListener("click", ()=> {addElement("*")});
 sDiv.addEventListener("click", ()=> {addElement("/")});
 dot.addEventListener("click", ()=> {addElement(".")});
+
+const del= document.querySelector("#erase-btn");
+del.addEventListener("click", ()=> {delLastElement();});
+
+function add(a, b){
+    return a+b;
+}
+function substract(a, b){
+    return a-b;
+}
+function multiply(a, b){
+    return a*b;
+}
+function divide(a, b){
+    return a/b;
+}
+function operate(a, op, b){
+    a= Number(a);
+    b= Number(b);
+    switch (op){
+        case "+": return add(a,b);
+        case "-": return substract(a,b);
+        case "*": return multiply(a,b);
+        case "/": return divide(a,b);
+        default:
+            alert("You are trying to calculate an invalid operation, check your equation");
+    }
+}
+
+function evaluateExpression(){
+    const tokens = expression.match(/(\d+(\.\d+)?|[+\-*/])/g);
+
+    if(!tokens) return "";
+
+    for(let i=0; i<tokens.length; i++){
+        if(tokens[i]=="*"||tokens[i]=="/"){
+            const aux= operate(tokens[i-1], tokens[i], tokens[i+1]);
+            tokens.splice(i-1, 3, aux);
+            i--;
+        }
+    }
+    for(let i=0; i<tokens.length; i++){
+        if(tokens[i]=="+"||tokens[i]=="-"){
+            const aux= operate(tokens[i-1], tokens[i], tokens[i+1]);
+            tokens.splice(i-1, 3, aux);
+            i--;
+        }
+    }
+
+    return tokens[0];
+}
+
+const equal= document.querySelector("#equal");
+equal.addEventListener("click", ()=> {
+    let result= evaluateExpression();
+    visor.textContent=result;
+    expression="";
+});
