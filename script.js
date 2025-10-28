@@ -1,11 +1,27 @@
 function addElement(e){
+    evalExpression=false;
+    expression += e;
+    visor.textContent = expression;
+}
+function addNumber(e){
+    if(evalExpression){
+        expression="";
+        evalExpression=false;
+    }
     expression += e;
     visor.textContent = expression;
 }
 
 function delLastElement(){
-    expression = expression.slice(0, -1);
-    visor.textContent = expression;
+    if(evalExpression){
+        expression="";
+        result=expression;
+        visor.textContent=result;
+    }else{
+       expression = expression.slice(0, -1);
+        visor.textContent = expression; 
+    }
+    
 }
 
 let expression = "";
@@ -26,16 +42,16 @@ const sMul=document.querySelector("#multiply");
 const sDiv=document.querySelector("#divide");
 const dot=document.querySelector("#dot");
 
-n1.addEventListener("click", ()=> {addElement("1")});
-n2.addEventListener("click", ()=> {addElement("2")});
-n3.addEventListener("click", ()=> {addElement("3")});
-n4.addEventListener("click", ()=> {addElement("4")});
-n5.addEventListener("click", ()=> {addElement("5")});
-n6.addEventListener("click", ()=> {addElement("6")});
-n7.addEventListener("click", ()=> {addElement("7")});
-n8.addEventListener("click", ()=> {addElement("8")});
-n9.addEventListener("click", ()=> {addElement("9")});
-n0.addEventListener("click", ()=> {addElement("0")});
+n1.addEventListener("click", ()=> {addNumber("1")});
+n2.addEventListener("click", ()=> {addNumber("2")});
+n3.addEventListener("click", ()=> {addNumber("3")});
+n4.addEventListener("click", ()=> {addNumber("4")});
+n5.addEventListener("click", ()=> {addNumber("5")});
+n6.addEventListener("click", ()=> {addNumber("6")});
+n7.addEventListener("click", ()=> {addNumber("7")});
+n8.addEventListener("click", ()=> {addNumber("8")});
+n9.addEventListener("click", ()=> {addNumber("9")});
+n0.addEventListener("click", ()=> {addNumber("0")});
 sAdd.addEventListener("click", ()=> {addElement("+")});
 sSub.addEventListener("click", ()=> {addElement("-")});
 sMul.addEventListener("click", ()=> {addElement("*")});
@@ -74,9 +90,17 @@ function evaluateExpression(){
     const tokens = expression.match(/(\d+(\.\d+)?|[+\-*/])/g);
 
     if(!tokens) return "";
+    else if(tokens[0]=="-"){
+        tokens.splice(0,1);
+        tokens[0]="-"+tokens[0];
+    }
 
     for(let i=0; i<tokens.length; i++){
         if(tokens[i]=="*"||tokens[i]=="/"){
+            if(tokens[i]=="/" && tokens[i+1]=="0"){
+                alert("You can't divide by 0");
+                return 0;
+            }
             const aux= operate(tokens[i-1], tokens[i], tokens[i+1]);
             tokens.splice(i-1, 3, aux);
             i--;
@@ -94,8 +118,12 @@ function evaluateExpression(){
 }
 
 const equal= document.querySelector("#equal");
+let evalExpression=false;
 equal.addEventListener("click", ()=> {
-    let result= evaluateExpression();
-    visor.textContent=result;
-    expression="";
+    if(expression!=""){
+        let result= evaluateExpression();
+        expression=result.toString();
+        visor.textContent=result;
+    }
+    evalExpression=true;
 });

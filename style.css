@@ -17,6 +17,7 @@
     border-radius: 20px;
     font-size: 48px;
     padding: 10px;
+    overflow: hidden;
     grid-column: span 4;
     
     display: flex;
